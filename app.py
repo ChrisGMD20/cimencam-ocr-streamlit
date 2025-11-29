@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from typing import List, Optional, Union, Dict
+from typing import List, Optional, Dict
 
 import cv2
 import numpy as np
@@ -11,17 +11,19 @@ from pdf2image import convert_from_bytes
 
 # ================== CONFIG ==================
 
-# Sur Windows, mettre ici le chemin vers le dossier "bin" de Poppler si besoin :
+# Sur Windows LOCAL, tu peux mettre un chemin vers Poppler :
 # POPPLER_PATH = r"C:\tools\poppler-24.02.0\Library\bin"
+# Sur Streamlit Cloud (Linux), on laisse None.
 POPPLER_PATH: Optional[str] = None
 
-# Sur Windows, décommente si Tesseract n'est pas dans le PATH :
+# Sur Windows LOCAL, si Tesseract n'est pas dans le PATH, décommente :
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"}
 
 # ================== REGEX PATTERNS ==================
 
+# ---- BL EXTERNE ----
 BL_PATTERNS: List[re.Pattern] = [
     # Cas normal : "BL externe : 215230-316215"
     # ou "BL externe . 215230-316215", etc.
@@ -36,6 +38,7 @@ BL_PATTERNS: List[re.Pattern] = [
     ),
 ]
 
+# ---- ID CAMION ----
 ID_CAMION_PATTERNS: List[re.Pattern] = [
     re.compile(
         r"ID\W*CAMI?ON[^\n]*?:\W*([A-Z0-9\-]+)",
@@ -43,6 +46,7 @@ ID_CAMION_PATTERNS: List[re.Pattern] = [
     ),
 ]
 
+# ---- ID CHAUFFEUR ----
 ID_CHAUFFEUR_PATTERNS: List[re.Pattern] = [
     re.compile(
         r"ID\W*CHAUFFEUR[^\n]*?:\W*([A-Z0-9 ]+?)(?=\s+Chauffeur\b|$)",
@@ -212,33 +216,6 @@ def inject_css():
             padding-bottom: 2rem;
             max-width: 1100px;
         }
-        .banner {
-            border-radius: 16px;
-            padding: 24px 32px;
-            background: linear-gradient(90deg, #27ae60, #0099ff);
-            margin-bottom: 1.5rem;
-            color: #ffffff;
-        }
-        .banner-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-        }
-        .banner-subtitle {
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-        .section-card {
-            background-color: #101318;
-            border-radius: 12px;
-            padding: 18px 20px;
-            border: 1px solid #232732;
-        }
-        .upload-box > div:nth-child(1) {
-            background-color: #181b24 !important;
-            border-radius: 10px !important;
-            border: 1px dashed #3e4657 !important;
-        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -254,10 +231,8 @@ def main():
 
     inject_css()
 
-    # 👉 PLUS DE BANNIÈRE, juste un titre simple
+    # Titre propre
     st.markdown("## ✅ Extraction des données de réception")
-
-    st.markdown("<div class='section-card'>", unsafe_allow_html=True)
 
     st.markdown("#### Fichier(s) (PDF / Images)")
     st.markdown(
@@ -305,9 +280,6 @@ def main():
                     file_name="extraction_bl_id.csv",
                     mime="text/csv",
                 )
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
 
 
 if __name__ == "__main__":
