@@ -212,7 +212,7 @@ def inject_css():
             background-color: #05070d;
         }
         .block-container {
-            padding-top: 1rem;
+            padding-top: 2rem;
             padding-bottom: 2rem;
             max-width: 1100px;
         }
